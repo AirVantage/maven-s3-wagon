@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import com.amazonaws.internal.ResettableInputStream;
+import java.io.InputStream;
 
 /**
  * An extension to the {@link FileInputStream} that notifies a @{link TransferProgress} object as it is being read from
@@ -27,18 +27,19 @@ import com.amazonaws.internal.ResettableInputStream;
  * @author Ben Hale
  * @since 1.1
  */
-public class TransferProgressFileInputStream extends ResettableInputStream {
+public class TransferProgressFileInputStream extends InputStream {
 
-    private TransferProgress progress;
+    private final TransferProgress progress;
+    private final FileInputStream delegate;
 
     public TransferProgressFileInputStream(File file, TransferProgress progress) throws IOException {
-        super(file);
+        this.delegate = new FileInputStream(file);
         this.progress = progress;
     }
 
     @Override
     public int read() throws IOException {
-        int b = super.read();
+        int b = delegate.read();
         if (b != -1) {
             progress.notify(new byte[] { (byte) b }, 1);
         }
@@ -47,7 +48,7 @@ public class TransferProgressFileInputStream extends ResettableInputStream {
 
     @Override
     public int read(byte b[]) throws IOException {
-        int length = super.read(b);
+        int length = delegate.read(b);
         if (length != -1) {
             progress.notify(b, length);
         }
@@ -56,7 +57,7 @@ public class TransferProgressFileInputStream extends ResettableInputStream {
 
     @Override
     public int read(byte b[], int off, int len) throws IOException {
-        int count = super.read(b, off, len);
+        int count = delegate.read(b, off, len);
         if (count == -1) {
             return count;
         }
@@ -68,5 +69,10 @@ public class TransferProgressFileInputStream extends ResettableInputStream {
             progress.notify(bytes, count);
         }
         return count;
+    }
+
+    @Override
+    public void close() throws IOException {
+        delegate.close();
     }
 }
