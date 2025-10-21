@@ -15,7 +15,7 @@
  */
 package org.kuali.maven.wagon;
 
-import org.kuali.common.aws.s3.SimpleFormatter;
+import org.kuali.maven.wagon.util.SimpleFormatter;
 
 /**
  * Holds timing and byte count information about a transfer operation

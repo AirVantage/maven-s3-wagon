@@ -15,10 +15,10 @@
  */
 package org.kuali.maven.wagon;
 
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import java.io.IOException;
 
 public interface RequestFactory {
 
-	PutObjectRequest getPutObjectRequest(PutFileContext context);
+	void upload(PutFileContext context) throws IOException;
 
 }
